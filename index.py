@@ -24,7 +24,7 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
 
     def make_img(file_path):
         opened_file = open(file_path, 'rb').read()
-        img = widgets.Image(value=opened_file.read(), format='jpg', width=300, height=400)
+        img = widgets.Image(value=opened_file, format='jpg', width=300, height=400)
         opened_file.close()
         return img
 
