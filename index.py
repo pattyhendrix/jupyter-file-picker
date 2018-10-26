@@ -3,6 +3,13 @@
 # TODO: Write the readme
 # TODO: add progress bar
 
+# Two buttons: OK and Delete
+# Click OK and the file path is removed from memory but not deleted
+# Delete does both
+# What if we called a render() function every time we do these mutations so we could
+# immediately refresh the list on every button click?
+# Live feed.
+
 from ipywidgets import widgets
 
 def render_file_list(file_paths, button_label="Delete Selected", checkbox_label="Delete me"):
