@@ -1,9 +1,8 @@
-# TODO: Safely open files (are we leaving the files open in our loop?)
 # TODO: re-render UI after we delete some photos
 # TODO: styling of grid to make it nicer to navigate
 # TODO: Write the readme
 # TODO: add progress bar
-#
+
 from ipywidgets import widgets
 
 def render_file_list(file_paths, button_label="Delete Selected", checkbox_label="Delete me"):
@@ -23,8 +22,9 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         return checkboxes
 
     def make_img(file_path):
-        opened_file = open(file_path, 'rb').read()
-        img = widgets.Image(value=opened_file, format='jpg', width=300, height=400)
+        opened_file = open(file_path, 'rb')
+        read_file = opened_file.read()
+        img = widgets.Image(value=read_file, format='jpg', width=300, height=400)
         opened_file.close()
         return img
 
@@ -33,7 +33,7 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         cb.file_path = file_path
         return cb
 
-    def on_button_click():
+    def on_button_click(b):
         for cb in checkboxes:
             if cb.value == True:
                 print('Deleting:', cb.file_path)
