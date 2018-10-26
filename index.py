@@ -3,6 +3,8 @@
 # TODO: styling of grid to make it nicer to navigate
 # TODO: Write the readme
 # TODO: add progress bar
+#
+from ipywidgets import widgets
 
 def render_file_list(file_paths, button_label="Delete Selected", checkbox_label="Delete me"):
     """
@@ -22,7 +24,7 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
 
     def make_img(file_path):
         opened_file = open(file_path, 'rb').read()
-        img = widgets.Image(value=file.read(), format='jpg', width=300, height=400)
+        img = widgets.Image(value=opened_file.read(), format='jpg', width=300, height=400)
         opened_file.close()
         return img
 
