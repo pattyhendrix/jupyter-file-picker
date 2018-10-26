@@ -3,6 +3,7 @@
 # TODO: re-render UI after we delete some photos
 # TODO: styling of grid to make it nicer to navigate
 # TODO: Write the readme
+# TODO: add progress bar
 
 button = widgets.Button(description='slaughter')
 
