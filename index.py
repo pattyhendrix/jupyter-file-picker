@@ -19,14 +19,13 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         On button click, deletes all selected images.
     """
 
+    image_checkbox_pairs = []
+
     def setup(file_paths):
-        checkboxes = []
         for fp in file_paths:
             img = make_img(fp)
             checkbox = make_checkbox(checkbox_label, fp)
-            checkboxes.append(checkbox)
-            display(checkbox, img)
-        return checkboxes
+            image_checkbox_pairs.append((img, checkbox, fp))
 
     def make_img(file_path):
         opened_file = open(file_path, 'rb')
@@ -41,15 +40,21 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         return cb
 
     def on_button_click(b):
-        for cb in checkboxes:
+        for img, cb, fp in image_checkbox_pairs:
             if cb.value == True:
                 print('Deleting:', cb.file_path)
                 os.remove(cb.file_path)
+                image_checkbox_pairs = [tuple for tuple in image_checkbox_pairs if tuple[1].value is not True]
+        render()
 
     def make_button(label):
         delete_button = widgets.Button(description=label)
         delete_button.on_click(on_button_click)
         return delete_button
 
-    checkboxes = setup(file_paths)
+    def render():
+        print('re-rendering!', len(image_checkbox_pairs))
+        display(image_checkbox_pairs)
+
+    setup(file_paths)
     display(make_button(button_label))
