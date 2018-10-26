@@ -1,7 +1,4 @@
 
-file = open(im1_path, "rb")
-image = file.read()
-
 button = widgets.Button(description='slaughter')
 
 
