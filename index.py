@@ -14,7 +14,7 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
     def setup(file_paths):
         checkboxes = []
         for fp in file_paths:
-            img = make_image(fp)
+            img = make_img(fp)
             checkbox = make_checkbox(checkbox_label, fp)
             checkboxes.append(checkbox)
             display(checkbox, img)
