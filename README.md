@@ -1,1 +1,1 @@
-# jupyter-file-picker
+# Jupyter File Picker Widget
