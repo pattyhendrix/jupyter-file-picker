@@ -3,14 +3,8 @@
 # TODO: Write the readme
 # TODO: add progress bar
 
-# Two buttons: OK and Delete
-# Click OK and the file path is removed from memory but not deleted
-# Delete does both
-# What if we called a render() function every time we do these mutations so we could
-# immediately refresh the list on every button click?
-# Live feed.
-
-from ipywidgets import widgets
+from ipywidgets import widgets, Layout
+from IPython.display import clear_output, HTML
 
 def render_file_list(file_paths, button_label="Delete Selected", checkbox_label="Delete me"):
     """
@@ -21,16 +15,17 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
 
     image_checkbox_pairs = []
 
-    def setup(file_paths):
+    def main(file_paths):
         for fp in file_paths:
             img = make_img(fp)
             checkbox = make_checkbox(checkbox_label, fp)
             image_checkbox_pairs.append((img, checkbox, fp))
+        render()
 
     def make_img(file_path):
         opened_file = open(file_path, 'rb')
         read_file = opened_file.read()
-        img = widgets.Image(value=read_file, format='jpg', width=300, height=400)
+        img = widgets.Image(value=read_file, format='jpg', width=300, height=300)
         opened_file.close()
         return img
 
@@ -40,11 +35,13 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         return cb
 
     def on_button_click(b):
+        to_remove = []
         for img, cb, fp in image_checkbox_pairs:
             if cb.value == True:
-                print('Deleting:', cb.file_path)
                 os.remove(cb.file_path)
-                image_checkbox_pairs = [tuple for tuple in image_checkbox_pairs if tuple[1].value is not True]
+                to_remove.append((img, cb, fp))
+        for img, cb, fp in to_remove:
+            image_checkbox_pairs.remove((img, cb, fp))
         render()
 
     def make_button(label):
@@ -53,8 +50,11 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         return delete_button
 
     def render():
-        print('re-rendering!', len(image_checkbox_pairs))
-        display(image_checkbox_pairs)
+        clear_output()
+        children = []
+        for img, cb, fp in image_checkbox_pairs:
+            children.append(widgets.VBox([img, cb], layout=Layout(height='250px', width='250px')))
+        display(widgets.HBox(children[:5]))
+        display(make_button(button_label))
 
-    setup(file_paths)
-    display(make_button(button_label))
+    main(file_paths)
