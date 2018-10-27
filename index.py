@@ -13,13 +13,14 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         On button click, deletes all selected images.
     """
 
-    image_checkbox_pairs = []
+    image_blocks = []
 
     def main(file_paths):
         for fp in file_paths:
             img = make_img(fp)
-            checkbox = make_checkbox(checkbox_label, fp)
-            image_checkbox_pairs.append((img, checkbox, fp))
+            keep_button = make_button('Keep', fp, on_keep)
+            delete_button = make_button('Delete', fp, on_delete)
+            image_blocks.append((img, keep_button, delete_button, fp))
         render()
 
     def make_img(file_path):
@@ -34,27 +35,34 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         cb.file_path = file_path
         return cb
 
-    def on_button_click(b):
-        to_remove = []
-        for img, cb, fp in image_checkbox_pairs:
-            if cb.value == True:
-                os.remove(cb.file_path)
-                to_remove.append((img, cb, fp))
-        for img, cb, fp in to_remove:
-            image_checkbox_pairs.remove((img, cb, fp))
+    def on_keep(btn):
+        remove_from_list(btn.file_path)
         render()
 
-    def make_button(label):
-        delete_button = widgets.Button(description=label)
-        delete_button.on_click(on_button_click)
-        return delete_button
+    def remove_from_list(file_path):
+        to_remove = []
+        for img, keep_btn, delete_btn, fp in image_blocks:
+            if file_path == fp:
+                to_remove.append((img, keep_btn, delete_btn, fp))
+        for img, keep_btn, delete_btn, fp in to_remove:
+            image_blocks.remove((img, keep_btn, delete_btn, fp))
+
+    def on_delete(btn):
+        os.remove(btn.file_path)
+        remove_from_list(btn.file_path)
+        render()
+
+    def make_button(label, file_path, handler):
+        btn = widgets.Button(description=label)
+        btn.on_click(handler)
+        btn.file_path = file_path
+        return btn
 
     def render():
         clear_output()
         children = []
-        for img, cb, fp in image_checkbox_pairs:
-            children.append(widgets.VBox([img, cb], layout=Layout(height='250px', width='250px')))
+        for img, keep_btn, delete_btn, fp in image_blocks:
+            children.append(widgets.VBox([img, keep_btn, delete_btn], layout=Layout(width='250px')))
         display(widgets.HBox(children[:5]))
-        display(make_button(button_label))
 
     main(file_paths)
