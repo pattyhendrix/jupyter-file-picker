@@ -13,8 +13,9 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         On button click, deletes all selected images.
     """
 
-    if file_paths == top_losses:
-        file_paths = data.valid_ds.x[interp.top_losses(10[1]]
+    # TODO: Come back to this so function can accept data bunch or top losses
+    # if file_paths == top_losses:
+    #     file_paths = data.valid_ds.x[interp.top_losses(10)[1]]
 
 
     image_blocks = []
