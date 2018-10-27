@@ -3,14 +3,8 @@
 # TODO: Write the readme
 # TODO: add progress bar
 
-# Two buttons: OK and Delete
-# Click OK and the file path is removed from memory but not deleted
-# Delete does both
-# What if we called a render() function every time we do these mutations so we could
-# immediately refresh the list on every button click?
-# Live feed.
-
-from ipywidgets import widgets
+from ipywidgets import widgets, Layout
+from IPython.display import clear_output, HTML
 
 def render_file_list(file_paths, button_label="Delete Selected", checkbox_label="Delete me"):
     """
@@ -18,24 +12,25 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         Opens each image renders blocks with img and checkbox.
         On button click, deletes all selected images.
     """
-    
+
     if file_paths == top_losses:
-        file_paths = data.valid_ds.x[interp.top_losses(9)[1]]
+        file_paths = data.valid_ds.x[interp.top_losses(10[1]]
 
 
-    def setup(file_paths):
-        checkboxes = []
+    image_blocks = []
+
+    def main(file_paths):
         for fp in file_paths:
             img = make_img(fp)
-            checkbox = make_checkbox(checkbox_label, fp)
-            checkboxes.append(checkbox)
-            display(checkbox, img)
-        return checkboxes
+            keep_button = make_button('Keep', fp, on_keep)
+            delete_button = make_button('Delete', fp, on_delete)
+            image_blocks.append((img, keep_button, delete_button, fp))
+        render()
 
     def make_img(file_path):
         opened_file = open(file_path, 'rb')
         read_file = opened_file.read()
-        img = widgets.Image(value=read_file, format='jpg', width=300, height=400)
+        img = widgets.Image(value=read_file, format='jpg', width=300, height=300)
         opened_file.close()
         return img
 
@@ -44,16 +39,34 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         cb.file_path = file_path
         return cb
 
-    def on_button_click(b):
-        for cb in checkboxes:
-            if cb.value == True:
-                print('Deleting:', cb.file_path)
-                os.remove(cb.file_path)
+    def on_keep(btn):
+        remove_from_list(btn.file_path)
+        render()
 
-    def make_button(label):
-        delete_button = widgets.Button(description=label)
-        delete_button.on_click(on_button_click)
-        return delete_button
+    def remove_from_list(file_path):
+        to_remove = []
+        for img, keep_btn, delete_btn, fp in image_blocks:
+            if file_path == fp:
+                to_remove.append((img, keep_btn, delete_btn, fp))
+        for img, keep_btn, delete_btn, fp in to_remove:
+            image_blocks.remove((img, keep_btn, delete_btn, fp))
 
-    checkboxes = setup(file_paths)
-    display(make_button(button_label))
+    def on_delete(btn):
+        os.remove(btn.file_path)
+        remove_from_list(btn.file_path)
+        render()
+
+    def make_button(label, file_path, handler):
+        btn = widgets.Button(description=label)
+        btn.on_click(handler)
+        btn.file_path = file_path
+        return btn
+
+    def render():
+        clear_output()
+        children = []
+        for img, keep_btn, delete_btn, fp in image_blocks:
+            children.append(widgets.VBox([img, keep_btn, delete_btn], layout=Layout(width='250px')))
+        display(widgets.HBox(children[:5]))
+
+    main(file_paths)
