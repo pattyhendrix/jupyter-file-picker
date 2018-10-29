@@ -1,12 +1,3 @@
-# TODO: re-render UI after we delete some photos
-# TODO: styling of grid to make it nicer to navigate
-# TODO: Write the readme
-#
-# TODO: Come back to this so function can accept data bunch or top losses
-# if file_paths == top_losses:
-#     file_paths = data.valid_ds.x[interp.top_losses(10)[1]]
-
-
 from ipywidgets import widgets, Layout
 from IPython.display import clear_output, HTML
 
