@@ -10,21 +10,33 @@
 from ipywidgets import widgets, Layout
 from IPython.display import clear_output, HTML
 
-def render_file_list(file_paths, button_label="Delete Selected", checkbox_label="Delete me"):
+def render_file_list(file_paths, button_label="Delete Selected", checkbox_label="Delete me", batch_size=3):
     """
         Takes in a list of fully-qualified file paths to images.
         Opens each image renders blocks with img and checkbox.
         On button click, deletes all selected images.
+
+        written by:
+            Zach Caceres @zachcaceres (https://github.com/zcaceres)
+            Jason
+            Francisco
+
+
     """
 
-    render_list = []
+    all_images = []
     batch = []
 
     def main(file_paths):
+        """
+            Puts all images from file_paths into memory and prepares initial render
+        """
         for fp in file_paths:
-            img = make_img(fp)
-            delete_button = make_button('Delete', file_path=fp, handler=on_delete)
-            render_list.append((img, delete_button, fp))
+            fp = Path(fp) # always convert to Posix path if not
+            if (os.path.isfile(fp)):
+                img = make_img(fp)
+                delete_btn = make_button('Delete', file_path=fp, handler=on_delete)
+                all_images.append((img, delete_btn, fp))
         render()
 
     def make_img(file_path):
@@ -36,18 +48,21 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
 
     def on_confirm(btn):
         to_remove = []
-        for img, delete_btn, fp in render_list:
+        for img, delete_btn, fp in batch:
             fp = delete_btn.file_path
             if (delete_btn.flagged_for_delete == True):
                 delete_image(fp)
             to_remove.append((img, delete_btn, fp))
         for img, delete_btn, fp in to_remove:
-            render_list.remove((img, delete_btn, fp))
+            all_images.remove((img, delete_btn, fp))
+        empty_batch()
         render()
 
+    def empty_batch():
+        batch[:] = []
+
     def delete_image(file_path):
-        print('deleting', file_path)
-        # TODO: REENABLE ME AFTER TESTING! os.remove(file_path)
+        os.remove(file_path)
 
     def on_delete(btn):
         """
@@ -55,11 +70,9 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         """
         if (btn.flagged_for_delete is True):
             btn.flagged_for_delete = False
-            btn.description = "Keep"
-            btn.button_style = "success"
+            btn.button_style = ""
         else:
             btn.flagged_for_delete = True
-            btn.description = "Delete"
             btn.button_style = "danger"
 
     def make_button(label, file_path=None, handler=None, style=None):
@@ -74,12 +87,13 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
 
     def render():
         clear_output()
-        children = []
-        if (len(render_list) == 0):
+        if (len(all_images) == 0):
             return display('No images to show :)')
-        for img, delete_btn, fp in render_list:
-            children.append(widgets.VBox([img, delete_btn], layout=Layout(width='250px')))
-        display(widgets.HBox(children[:5]))
+        widgets_to_render = []
+        for img, delete_btn, fp in all_images[:batch_size]:
+            widgets_to_render.append(widgets.VBox([img, delete_btn], layout=Layout(width='250px', height='300px')))
+            batch.append((img, delete_btn, fp))
+        display(widgets.HBox(widgets_to_render))
         display(make_button('Confirm', handler=on_confirm, style="primary"))
 
     main(file_paths)
