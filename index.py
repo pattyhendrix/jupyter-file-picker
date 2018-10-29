@@ -18,7 +18,7 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
 
         written by:
             Zach Caceres @zachcaceres (https://github.com/zcaceres)
-            Jason
+            Jason Patnick (https://github.com/pattyhendrix)
             Francisco
 
 
