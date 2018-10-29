@@ -39,14 +39,20 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
                 all_images.append((img, delete_btn, fp))
         render()
 
-    def make_img(file_path):
+    def make_img(file_path, height='250px', width='300px', format='jpg'):
+        """
+            Returns an image widget for specified file name.
+        """
         opened_file = open(file_path, 'rb')
         read_file = opened_file.read()
-        img = widgets.Image(value=read_file, format='jpg', layout=Layout(width="300px", height="250px"))
+        img = widgets.Image(value=read_file, format=format, layout=Layout(width=width, height=height))
         opened_file.close()
         return img
 
     def on_confirm(btn):
+        """
+            Handler for Confirm button click. Deletes all flagged images.
+        """
         to_remove = []
         for img, delete_btn, fp in batch:
             fp = delete_btn.file_path
@@ -76,6 +82,9 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
             btn.button_style = "danger"
 
     def make_button(label, file_path=None, handler=None, style=None):
+        """
+            Returns a Button widget with specified handler
+        """
         btn = widgets.Button(description=label)
         if (handler is not None):
             btn.on_click(handler)
@@ -85,15 +94,24 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
         btn.flagged_for_delete = False
         return btn
 
+    def make_vertical_box(children, width='auto', height='300px'):
+        return widgets.VBox(children, layout=Layout(width=width, height=height))
+
+    def make_horizontal_box(children):
+        return widgets.HBox(children)
+
     def render():
+        """
+            Re-renders Jupyter cell for a batch of images.
+        """
         clear_output()
         if (len(all_images) == 0):
             return display('No images to show :)')
         widgets_to_render = []
         for img, delete_btn, fp in all_images[:batch_size]:
-            widgets_to_render.append(widgets.VBox([img, delete_btn], layout=Layout(width='auto', height='300px')))
+            widgets_to_render.append(make_vertical_box([img, delete_btn]))
             batch.append((img, delete_btn, fp))
-        display(widgets.HBox(widgets_to_render))
+        display(make_horizontal_box(widgets_to_render))
         display(make_button('Confirm', handler=on_confirm, style="primary"))
 
     main(file_paths)
