@@ -10,7 +10,7 @@
 from ipywidgets import widgets, Layout
 from IPython.display import clear_output, HTML
 
-def render_file_list(file_paths, button_label="Delete Selected", checkbox_label="Delete me", batch_size=3):
+def render_file_list(file_paths, button_label="Delete Selected", checkbox_label="Delete me", batch_size=5):
     """
         Takes in a list of fully-qualified file paths to images.
         Opens each image renders blocks with img and checkbox.
@@ -42,7 +42,7 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
     def make_img(file_path):
         opened_file = open(file_path, 'rb')
         read_file = opened_file.read()
-        img = widgets.Image(value=read_file, format='jpg', width=300, height=300)
+        img = widgets.Image(value=read_file, format='jpg', layout=Layout(width="300px", height="250px"))
         opened_file.close()
         return img
 
@@ -91,7 +91,7 @@ def render_file_list(file_paths, button_label="Delete Selected", checkbox_label=
             return display('No images to show :)')
         widgets_to_render = []
         for img, delete_btn, fp in all_images[:batch_size]:
-            widgets_to_render.append(widgets.VBox([img, delete_btn], layout=Layout(width='250px', height='300px')))
+            widgets_to_render.append(widgets.VBox([img, delete_btn], layout=Layout(width='auto', height='300px')))
             batch.append((img, delete_btn, fp))
         display(widgets.HBox(widgets_to_render))
         display(make_button('Confirm', handler=on_confirm, style="primary"))
