@@ -78,7 +78,7 @@ def render():
     if (len(all_images) == 0):
         return display('No images to show :)')
     widgets_to_render = []
-    for img, delete_btn, fp in all_images[:batch_size]:
+    for img, delete_btn, fp in all_images[:BATCH_SIZE]:
         widgets_to_render.append(make_vertical_box([img, delete_btn]))
         batch.append((img, delete_btn, fp))
     display(make_horizontal_box(widgets_to_render))
